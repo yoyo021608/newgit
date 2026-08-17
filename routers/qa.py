@@ -112,8 +112,9 @@ def ask_fast(
     if tool_result:
         try:
             save_chat_history(db, user_id, question, tool_result, [])
+            print(f"✅ 快速问答历史已保存: {question}")
         except Exception as e:
-            print(f"保存聊天记录失败: {e}")
+            print(f"❌ 保存聊天记录失败: {e}")
         return {"answer": f"🔧 {tool_result}"}
 
     # 技能调用
@@ -121,8 +122,9 @@ def ask_fast(
     if skill_result:
         try:
             save_chat_history(db, user_id, question, skill_result, [])
+            print(f"✅ 快速问答历史已保存: {question}")
         except Exception as e:
-            print(f"保存聊天记录失败: {e}")
+            print(f"❌ 保存聊天记录失败: {e}")
         return {"answer": f"🧠 {skill_result}"}
 
     return {"answer": None}
@@ -204,13 +206,28 @@ def ask_question(
     )
 
 
+@router.post("/save")
+def save_chat(
+    req: SaveRequest,
+    token: str = Header(...),
+    db: Session = Depends(get_db)
+):
+    user_id = get_current_user(token)
+    try:
+        save_chat_history(db, user_id, req.question, req.answer, req.sources)
+        return {"message": "保存成功"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"保存失败: {str(e)}")
+
+
+@router.get("/history")
 @router.get("/history")
 def get_history(
         token: str = Header(...),
         db: Session = Depends(get_db)
 ):
     user_id = get_current_user(token)
-    history = get_chat_history(db, user_id, limit=50)
+    history = get_chat_history(db, user_id, limit=200)
     result = []
     for h in history:
         sources = []

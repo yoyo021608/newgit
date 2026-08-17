@@ -386,33 +386,32 @@
     }
 
     async function loadHistory() {
-        if (!token) return;
-        try {
-            const res = await request('GET', '/qa/history');
-            if (Array.isArray(res) && res.length > 0) {
-                chatHistory = res.map(item => ({
-                    role: 'user',
-                    content: item.question,
-                    sources: []
-                }));
-                chatHistory = chatHistory.concat(res.map(item => ({
-                    role: 'ai',
-                    content: item.answer,
-                    sources: item.sources || []
-                })));
-                // 交叉合并：user -> ai 成对
-                let merged = [];
-                for (let i = 0; i < res.length; i++) {
-                    merged.push({ role: 'user', content: res[i].question, sources: [] });
-                    merged.push({ role: 'ai', content: res[i].answer, sources: res[i].sources || [] });
+    if (!token) return;
+    try {
+        const res = await request('GET', '/qa/history');
+        console.log('历史记录原始数据:', res);
+        if (Array.isArray(res) && res.length > 0) {
+            let merged = [];
+            for (let i = 0; i < res.length; i++) {
+                merged.push({ role: 'user', content: res[i].question, sources: [] });
+                // sources 可能是字符串 '[]'，需要解析为数组
+                let sources = res[i].sources || [];
+                if (typeof sources === 'string') {
+                    try {
+                        sources = JSON.parse(sources);
+                    } catch(e) {
+                        sources = [];
+                    }
                 }
-                chatHistory = merged;
-                renderChatHistory();
+                merged.push({ role: 'ai', content: res[i].answer, sources: sources });
             }
-        } catch (e) {
-            console.log('加载历史记录失败:', e);
+            chatHistory = merged;
+            renderChatHistory();
         }
+    } catch (e) {
+        console.log('加载历史记录失败:', e);
     }
+}
 
     function showMain() {
         document.getElementById('page-login').classList.add('hidden');
