@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>知识库系统</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', 'PingFang SC', sans-serif;
+            background: #f0f4f9;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 24px;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+            padding: 32px 36px;
+            min-height: 500px;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1e293b;
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .hidden { display: none !important; }
+
+        /* 登录页 */
+        #page-login .login-box { max-width: 340px; margin: 0 auto; }
+        #page-login label { display: block; font-size: 13px; font-weight: 500; color: #334155; margin-top: 14px; margin-bottom: 4px; }
+        #page-login input {
+            width: 100%; padding: 10px 14px; border: 1px solid #d0d7e0; border-radius: 10px;
+            font-size: 14px; outline: none; transition: 0.2s;
+        }
+        #page-login input:focus { border-color: #7b9edb; box-shadow: 0 0 0 3px rgba(59,130,246,0.08); }
+        #page-login .login-btn {
+            width: 100%; margin-top: 18px; padding: 10px;
+            background: #dbeafe; color: #1e4f8a; border: none; border-radius: 40px;
+            font-size: 15px; font-weight: 500; cursor: pointer; transition: 0.2s;
+        }
+        #page-login .login-btn:hover { background: #bfdbfe; }
+        #page-login .login-links {
+            display: flex; justify-content: space-between; margin-top: 16px; font-size: 13px;
+        }
+        #page-login .login-links a { color: #7b9edb; text-decoration: none; cursor: pointer; }
+        #page-login .login-links a:hover { text-decoration: underline; }
+
+        .alert-msg {
+            padding: 8px 12px; border-radius: 8px; font-size: 13px; margin-bottom: 10px;
+        }
+        .alert-msg.success { background: #ecfdf5; color: #065f46; }
+        .alert-msg.error { background: #fef2f2; color: #991b1b; }
+        .alert-msg.info { background: #eff6ff; color: #1e40af; }
+
+        /* 注册页 */
+        #page-register .register-box { max-width: 340px; margin: 0 auto; }
+        #page-register label { display: block; font-size: 13px; font-weight: 500; color: #334155; margin-top: 14px; margin-bottom: 4px; }
+        #page-register input {
+            width: 100%; padding: 10px 14px; border: 1px solid #d0d7e0; border-radius: 10px;
+            font-size: 14px; outline: none;
+        }
+        #page-register input:focus { border-color: #7b9edb; box-shadow: 0 0 0 3px rgba(59,130,246,0.08); }
+        #page-register .register-btn {
+            width: 100%; margin-top: 18px; padding: 10px;
+            background: #dbeafe; color: #1e4f8a; border: none; border-radius: 40px;
+            font-size: 15px; font-weight: 500; cursor: pointer;
+        }
+        #page-register .register-btn:hover { background: #bfdbfe; }
+        #page-register .back-link {
+            display: block; text-align: center; margin-top: 14px; font-size: 13px;
+            color: #7b9edb; text-decoration: none; cursor: pointer;
+        }
+        #page-register .back-link:hover { text-decoration: underline; }
+        .password-hint { font-size: 12px; color: #94a3b8; margin-top: 4px; }
+
+        /* 忘记密码页 */
+        #page-forgot .forgot-box { max-width: 340px; margin: 0 auto; }
+        #page-forgot label { display: block; font-size: 13px; font-weight: 500; color: #334155; margin-top: 14px; margin-bottom: 4px; }
+        #page-forgot input {
+            width: 100%; padding: 10px 14px; border: 1px solid #d0d7e0; border-radius: 10px;
+            font-size: 14px; outline: none;
+        }
+        #page-forgot input:focus { border-color: #7b9edb; box-shadow: 0 0 0 3px rgba(59,130,246,0.08); }
+        #page-forgot .forgot-btn {
+            width: 100%; margin-top: 18px; padding: 10px;
+            background: #dbeafe; color: #1e4f8a; border: none; border-radius: 40px;
+            font-size: 15px; font-weight: 500; cursor: pointer;
+        }
+        #page-forgot .forgot-btn:hover { background: #bfdbfe; }
+        #page-forgot .back-link {
+            display: block; text-align: center; margin-top: 14px; font-size: 13px;
+            color: #7b9edb; text-decoration: none; cursor: pointer;
+        }
+        #page-forgot .back-link:hover { text-decoration: underline; }
+
+        /* 主界面 */
+        #main-page .nav {
+            display: flex; gap: 8px; border-bottom: 1px solid #e9edf4;
+            padding-bottom: 12px; margin-bottom: 16px;
+        }
+        #main-page .nav button {
+            padding: 6px 20px; border: none; border-radius: 30px;
+            background: transparent; color: #64748b; font-size: 14px; cursor: pointer; transition: 0.2s;
+        }
+        #main-page .nav button:hover { background: #eef3f9; color: #1e293b; }
+        #main-page .nav button.active { background: #dbeafe; color: #1e4f8a; font-weight: 500; }
+        #main-page .nav button.logout { margin-left: auto; color: #b91c1c; background: #fef2f2; }
+        #main-page .nav button.logout:hover { background: #fee2e2; }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* 文档管理 */
+        .file-upload-row {
+            display: flex; gap: 10px; align-items: center;
+        }
+        .file-upload-row input[type="file"] {
+            flex: 1; padding: 8px 12px; border: 1px dashed #cbd5e1; border-radius: 10px;
+            font-size: 13px; background: #f8fafc;
+        }
+        .file-upload-row .upload-btn {
+            padding: 8px 20px; background: #dbeafe; color: #1e4f8a;
+            border: none; border-radius: 40px; font-size: 13px; font-weight: 500; cursor: pointer;
+        }
+        .file-upload-row .upload-btn:hover { background: #bfdbfe; }
+
+        .file-list { margin-top: 12px; }
+        .file-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px 14px; background: #f8fafc; border-radius: 10px;
+            border: 1px solid #eef2f8; margin-top: 6px;
+        }
+        .file-item .name { font-weight: 500; color: #0f172a; }
+        .file-item .meta { font-size: 12px; color: #94a3b8; }
+        .file-item .del-btn {
+            background: #fee2e2; border: none; color: #b91c1c;
+            padding: 4px 14px; border-radius: 30px; font-size: 12px; cursor: pointer;
+        }
+        .file-item .del-btn:hover { background: #fecaca; }
+
+        .pagination {
+            display: flex; gap: 6px; justify-content: center; margin-top: 14px; flex-wrap: wrap;
+        }
+        .pagination button {
+            padding: 4px 14px; border: none; border-radius: 30px;
+            background: #f1f5f9; color: #334155; font-size: 13px; cursor: pointer;
+        }
+        .pagination button.active-page { background: #dbeafe; color: #1e4f8a; font-weight: 500; }
+
+        /* 问答聊天框 */
+        .chat-container {
+            border: 1px solid #eef2f8; border-radius: 16px; padding: 16px;
+            height: 380px; overflow-y: auto; background: #fafcff; margin-bottom: 12px;
+        }
+        .chat-container .msg {
+            margin-bottom: 12px; max-width: 85%; padding: 10px 16px;
+            border-radius: 14px; font-size: 14px; line-height: 1.6; word-wrap: break-word;
+        }
+        .chat-container .msg.user {
+            background: #dbeafe; color: #1e293b; margin-left: auto; border-bottom-right-radius: 4px;
+        }
+        .chat-container .msg.ai {
+            background: #ffffff; color: #1e293b; border: 1px solid #eef2f8; border-bottom-left-radius: 4px;
+        }
+        .chat-container .msg .sources {
+            font-size: 12px; color: #94a3b8; margin-top: 6px;
+            border-top: 1px solid #eef2f8; padding-top: 6px;
+        }
+        .chat-container .msg .sources span {
+            display: inline-block; background: #f1f5f9; padding: 2px 8px;
+            border-radius: 12px; margin-right: 6px; font-size: 11px;
+        }
+        .chat-container .empty-tip {
+            color: #94a3b8; font-style: italic; padding: 16px 8px; text-align: center;
+        }
+
+        .chat-input-row {
+            display: flex; gap: 10px;
+        }
+        .chat-input-row textarea {
+            flex: 1; padding: 10px 14px; border: 1px solid #d0d7e0; border-radius: 12px;
+            font-size: 14px; resize: none; height: 50px; font-family: inherit; outline: none;
+        }
+        .chat-input-row textarea:focus { border-color: #7b9edb; box-shadow: 0 0 0 3px rgba(59,130,246,0.08); }
+        .chat-input-row .send-btn {
+            padding: 10px 24px; background: #dbeafe; color: #1e4f8a;
+            border: none; border-radius: 40px; font-size: 14px; font-weight: 500; cursor: pointer;
+            white-space: nowrap;
+        }
+        .chat-input-row .send-btn:hover { background: #bfdbfe; }
+
+        .cursor-blink {
+            display: inline-block;
+            animation: blink 0.7s step-end infinite;
+            color: #7b9edb;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        hr { margin: 14px 0; border: none; border-top: 1px solid #eef2f8; }
+
+        .msg-box {
+            padding: 8px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 10px;
+        }
+        .msg-box.success { background: #ecfdf5; color: #065f46; }
+        .msg-box.error { background: #fef2f2; color: #991b1b; }
+        .msg-box.info { background: #eff6ff; color: #1e40af; }
+    </style>
+</head>
+<body>
+
+<div class="container" id="app">
+
+    <!-- 登录页 -->
+    <div id="page-login">
+        <h1>📚 知识库</h1>
+        <div class="login-box">
+            <div id="login-msg" class="alert-msg hidden"></div>
+            <label>用户名</label>
+            <input id="login-username" placeholder="请输入用户名">
+            <label>密码</label>
+            <input id="login-password" type="password" placeholder="请输入密码">
+            <button class="login-btn" id="login-btn">登 录</button>
+            <div class="login-links">
+                <a id="go-register-link">没有账户？去注册</a>
+                <a id="go-forgot-link">忘记密码？</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 注册页 -->
+    <div id="page-register" class="hidden">
+        <h1>📚 知识库</h1>
+        <div class="register-box">
+            <div id="register-msg" class="alert-msg hidden"></div>
+            <label>用户名</label>
+            <input id="register-username" placeholder="请设置用户名">
+            <label>邮箱</label>
+            <input id="register-email" placeholder="请输入邮箱">
+            <label>密码</label>
+            <input id="register-password" type="password" placeholder="至少8位，含字母和数字">
+            <div class="password-hint">密码需至少8位，包含字母和数字</div>
+            <button class="register-btn" id="register-btn">注 册</button>
+            <a class="back-link" id="go-login-link">已有账户？去登录</a>
+        </div>
+    </div>
+
+    <!-- 忘记密码页 -->
+    <div id="page-forgot" class="hidden">
+        <h1>📚 知识库</h1>
+        <div class="forgot-box">
+            <div id="forgot-msg" class="alert-msg hidden"></div>
+            <label>用户名</label>
+            <input id="forgot-username" placeholder="请输入用户名">
+            <label>邮箱</label>
+            <input id="forgot-email" placeholder="请输入注册邮箱">
+            <label>新密码</label>
+            <input id="forgot-new-password" type="password" placeholder="至少8位，含字母和数字">
+            <button class="forgot-btn" id="forgot-btn">重置密码</button>
+            <a class="back-link" id="forgot-back-link">返回登录</a>
+        </div>
+    </div>
+
+    <!-- 主界面 -->
+    <div id="main-page" class="hidden">
+        <h1>📚 知识库</h1>
+        <div class="nav">
+            <button class="active" data-tab="docs">📄 文档管理</button>
+            <button data-tab="qa">💬 智能问答</button>
+            <button class="logout" id="logout-btn">退出</button>
+        </div>
+
+        <!-- 文档 -->
+        <div id="tab-docs" class="tab-content active">
+            <div id="docs-msg" class="msg-box hidden"></div>
+            <div class="file-upload-row">
+                <input type="file" id="file-input" accept=".txt,.md,.pdf,.docx">
+                <button class="upload-btn" id="upload-btn">上传</button>
+            </div>
+            <hr>
+            <div class="file-list" id="file-list"></div>
+            <div class="pagination" id="pagination-controls"></div>
+        </div>
+
+        <!-- 问答 -->
+        <div id="tab-qa" class="tab-content">
+            <div id="qa-msg" class="msg-box hidden"></div>
+            <div class="chat-container" id="chat-container">
+                <div class="empty-tip">💡 上传文档后，在这里提问...</div>
+            </div>
+            <div class="chat-input-row">
+                <textarea id="qa-input" placeholder="输入你的问题..." rows="1"></textarea>
+                <button class="send-btn" id="qa-send-btn">发送</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // =========================================================
+    // 状态
+    // =========================================================
+    let token = localStorage.getItem('token') || '';
+    let currentPage = 1;
+    const PAGE_SIZE = 5;
+    let allDocs = [];
+    let chatHistory = [];
+    let isStreaming = false;
+
+    const API_BASE = 'http://127.0.0.1:8001/api';
+
+    const $ = id => document.getElementById(id);
+
+    // =========================================================
+    // 工具函数
+    // =========================================================
+    function showMsg(el, text, type) {
+        el.className = 'alert-msg ' + type;
+        el.textContent = text;
+        el.classList.remove('hidden');
+    }
+
+    function hideMsg(el) {
+        el.classList.add('hidden');
+    }
+
+    function validateEmail(email) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+
+    function validatePassword(pw) {
+        return pw.length >= 8 && /[a-zA-Z]/.test(pw) && /[0-9]/.test(pw);
+    }
+
+    async function request(method, url, body) {
+        const headers = { 'Content-Type': 'application/json' };
+        if (token) headers['token'] = token;
+        const res = await fetch(API_BASE + url, {
+            method,
+            headers,
+            body: body ? JSON.stringify(body) : undefined
+        });
+        return await res.json();
+    }
+
+    // =========================================================
+    // 页面切换
+    // =========================================================
+    function showLogin() {
+        document.getElementById('page-login').classList.remove('hidden');
+        document.getElementById('page-register').classList.add('hidden');
+        document.getElementById('page-forgot').classList.add('hidden');
+        document.getElementById('main-page').classList.add('hidden');
+    }
+
+    function showRegister() {
+        document.getElementById('page-login').classList.add('hidden');
+        document.getElementById('page-register').classList.remove('hidden');
+        document.getElementById('page-forgot').classList.add('hidden');
+        document.getElementById('main-page').classList.add('hidden');
+    }
+
+    function showForgot() {
+        document.getElementById('page-login').classList.add('hidden');
+        document.getElementById('page-register').classList.add('hidden');
+        document.getElementById('page-forgot').classList.remove('hidden');
+        document.getElementById('main-page').classList.add('hidden');
+    }
+
+    async function loadHistory() {
+        if (!token) return;
+        try {
+            const res = await request('GET', '/qa/history');
+            if (Array.isArray(res) && res.length > 0) {
+                chatHistory = res.map(item => ({
+                    role: 'user',
+                    content: item.question,
+                    sources: []
+                }));
+                chatHistory = chatHistory.concat(res.map(item => ({
+                    role: 'ai',
+                    content: item.answer,
+                    sources: item.sources || []
+                })));
+                // 交叉合并：user -> ai 成对
+                let merged = [];
+                for (let i = 0; i < res.length; i++) {
+                    merged.push({ role: 'user', content: res[i].question, sources: [] });
+                    merged.push({ role: 'ai', content: res[i].answer, sources: res[i].sources || [] });
+                }
+                chatHistory = merged;
+                renderChatHistory();
+            }
+        } catch (e) {
+            console.log('加载历史记录失败:', e);
+        }
+    }
+
+    function showMain() {
+        document.getElementById('page-login').classList.add('hidden');
+        document.getElementById('page-register').classList.add('hidden');
+        document.getElementById('page-forgot').classList.add('hidden');
+        document.getElementById('main-page').classList.remove('hidden');
+        loadDocs();
+        switchTab('docs');
+        loadHistory();
+    }
+
+    // =========================================================
+    // Tab 切换
+    // =========================================================
+    function switchTab(tab) {
+        document.querySelectorAll('[data-tab]').forEach(b => b.classList.remove('active'));
+        document.querySelector(`[data-tab="${tab}"]`)?.classList.add('active');
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        const target = tab === 'docs' ? $('tab-docs') : $('tab-qa');
+        if (target) target.classList.add('active');
+        if (tab === 'docs') loadDocs();
+        if (tab === 'qa') renderChatHistory();
+    }
+
+    document.querySelectorAll('[data-tab]').forEach(btn => {
+        btn.addEventListener('click', function() {
+            switchTab(this.dataset.tab);
+        });
+    });
+
+    // =========================================================
+    // 认证相关
+    // =========================================================
+
+    // 注册
+    $('register-btn').addEventListener('click', async function() {
+        const username = $('register-username').value.trim();
+        const email = $('register-email').value.trim();
+        const password = $('register-password').value;
+        if (!username) return showMsg($('register-msg'), '请输入用户名', 'error');
+        if (!validateEmail(email)) return showMsg($('register-msg'), '邮箱格式错误', 'error');
+        if (!validatePassword(password)) return showMsg($('register-msg'), '密码需≥8位，含字母和数字', 'error');
+        hideMsg($('register-msg'));
+        try {
+            const res = await request('POST', '/users/register', { username, email, password });
+            if (res.id) {
+                showMsg($('register-msg'), '注册成功！自动登录中...', 'success');
+                const loginRes = await request('POST', '/users/login', { username, password });
+                if (loginRes.access_token) {
+                    token = loginRes.access_token;
+                    localStorage.setItem('token', token);
+                    showMain();
+                } else {
+                    showMsg($('register-msg'), '自动登录失败，请手动登录', 'error');
+                    showLogin();
+                }
+            } else {
+                showMsg($('register-msg'), res.detail || '注册失败', 'error');
+            }
+        } catch (e) {
+            showMsg($('register-msg'), '网络错误', 'error');
+        }
+    });
+
+    // 登录
+    $('login-btn').addEventListener('click', async function() {
+        const username = $('login-username').value.trim();
+        const password = $('login-password').value;
+        if (!username || !password) return showMsg($('login-msg'), '请填写完整', 'error');
+        hideMsg($('login-msg'));
+        try {
+            const res = await request('POST', '/users/login', { username, password });
+            if (res.access_token) {
+                token = res.access_token;
+                localStorage.setItem('token', token);
+                showMain();
+            } else {
+                showMsg($('login-msg'), res.detail || '登录失败', 'error');
+            }
+        } catch (e) {
+            showMsg($('login-msg'), '网络错误', 'error');
+        }
+    });
+
+    // 忘记密码
+    $('forgot-btn').addEventListener('click', async function() {
+        const username = $('forgot-username').value.trim();
+        const email = $('forgot-email').value.trim();
+        const newPassword = $('forgot-new-password').value;
+        if (!username || !email || !newPassword) return showMsg($('forgot-msg'), '请填写完整', 'error');
+        if (!validateEmail(email)) return showMsg($('forgot-msg'), '邮箱格式错误', 'error');
+        if (!validatePassword(newPassword)) return showMsg($('forgot-msg'), '密码需≥8位，含字母和数字', 'error');
+        hideMsg($('forgot-msg'));
+        try {
+            const res = await request('POST', '/users/forgot-password', { username, email, new_password: newPassword });
+            if (res && res.message) {
+                showMsg($('forgot-msg'), '✅ 密码重置成功！请登录', 'success');
+                setTimeout(() => showLogin(), 1500);
+            } else if (res && res.detail) {
+                showMsg($('forgot-msg'), '❌ ' + res.detail, 'error');
+            } else {
+                showMsg($('forgot-msg'), '❌ ' + JSON.stringify(res), 'error');
+            }
+        } catch (e) {
+            showMsg($('forgot-msg'), '网络错误，请稍后重试', 'error');
+        }
+    });
+
+    // 切换页面
+    $('go-register-link').addEventListener('click', showRegister);
+    $('go-login-link').addEventListener('click', showLogin);
+    $('go-forgot-link').addEventListener('click', showForgot);
+    $('forgot-back-link').addEventListener('click', showLogin);
+
+    // 回车触发
+    ['login-username', 'login-password'].forEach(id => {
+        $(id).addEventListener('keydown', e => { if (e.key === 'Enter') $('login-btn').click(); });
+    });
+    ['register-username', 'register-email', 'register-password'].forEach(id => {
+        $(id).addEventListener('keydown', e => { if (e.key === 'Enter') $('register-btn').click(); });
+    });
+    ['forgot-username', 'forgot-email', 'forgot-new-password'].forEach(id => {
+        $(id).addEventListener('keydown', e => { if (e.key === 'Enter') $('forgot-btn').click(); });
+    });
+
+    // 退出
+    $('logout-btn').addEventListener('click', function() {
+        localStorage.removeItem('token');
+        token = '';
+        chatHistory = [];
+        showLogin();
+    });
+
+    // =========================================================
+    // 文档管理
+    // =========================================================
+    async function loadDocs() {
+        if (!token) return;
+        try {
+            const res = await request('GET', '/documents/');
+            if (Array.isArray(res)) {
+                allDocs = res;
+                currentPage = 1;
+                renderDocs();
+                renderPagination();
+            }
+        } catch (e) {}
+    }
+
+    function renderDocs() {
+        const list = $('file-list');
+        const start = (currentPage - 1) * PAGE_SIZE;
+        const items = allDocs.slice(start, start + PAGE_SIZE);
+        if (items.length === 0) {
+            list.innerHTML = '<p style="color:#94a3b8;padding:12px 0;">暂无文档</p>';
+            return;
+        }
+        list.innerHTML = items.map(d => `
+            <div class="file-item">
+                <div>
+                    <div class="name">${d.filename}</div>
+                    <div class="meta">${d.file_type} · ${new Date(d.created_at).toLocaleString()}</div>
+                </div>
+                <button class="del-btn" data-id="${d.id}">删除</button>
+            </div>
+        `).join('');
+        list.querySelectorAll('.del-btn').forEach(btn => {
+            btn.addEventListener('click', async function() {
+                const id = this.dataset.id;
+                if (!confirm('确定删除？')) return;
+                const res = await request('DELETE', `/documents/${id}`);
+                if (res.message) loadDocs();
+            });
+        });
+    }
+
+    function renderPagination() {
+        const container = $('pagination-controls');
+        const totalPages = Math.ceil(allDocs.length / PAGE_SIZE);
+        if (totalPages <= 1) { container.innerHTML = ''; return; }
+        let html = '';
+        for (let i = 1; i <= totalPages; i++) {
+            html += `<button class="${i === currentPage ? 'active-page' : ''}" data-page="${i}">${i}</button>`;
+        }
+        container.innerHTML = html;
+        container.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('click', function() {
+                currentPage = parseInt(this.dataset.page);
+                renderDocs();
+                renderPagination();
+            });
+        });
+    }
+
+    $('upload-btn').addEventListener('click', async function() {
+        const input = $('file-input');
+        if (!input.files[0]) return showDocMsg('请选择文件', 'error');
+        const form = new FormData();
+        form.append('file', input.files[0]);
+        try {
+            const res = await fetch(API_BASE + '/documents/upload', {
+                method: 'POST',
+                headers: { 'token': token },
+                body: form
+            });
+            const data = await res.json();
+            if (data.id) {
+                showDocMsg('上传成功', 'success');
+                loadDocs();
+                input.value = '';
+            } else {
+                showDocMsg(data.detail || '上传失败', 'error');
+            }
+        } catch (e) {
+            showDocMsg('上传失败', 'error');
+        }
+    });
+
+    function showDocMsg(text, type) {
+        const el = $('docs-msg');
+        el.className = 'msg-box ' + type;
+        el.textContent = text;
+        el.classList.remove('hidden');
+        setTimeout(() => el.classList.add('hidden'), 3000);
+    }
+
+    // =========================================================
+    // 问答 - 聊天框 + 流式 + 历史记录 + 来源精确显示
+    // =========================================================
+    function renderChatHistory() {
+        const container = $('chat-container');
+        if (chatHistory.length === 0) {
+            container.innerHTML = '<div class="empty-tip">💡 上传文档后，在这里提问...</div>';
+            return;
+        }
+        container.innerHTML = '';
+        chatHistory.forEach(msg => {
+            const div = document.createElement('div');
+            div.className = `msg ${msg.role}`;
+            if (msg.sources && msg.sources.length > 0) {
+                const contentText = msg.content;
+                const srcDiv = document.createElement('div');
+                srcDiv.className = 'sources';
+                srcDiv.innerHTML = '📎 ' + msg.sources.map(s => `<span>${s.filename}</span>`).join('');
+                div.textContent = contentText;
+                div.appendChild(srcDiv);
+            } else {
+                div.textContent = msg.content;
+            }
+            container.appendChild(div);
+        });
+        scrollChatToBottom();
+    }
+
+    function addChatMessage(role, content, isPlaceholder = false, sources = null) {
+        const container = $('chat-container');
+        const emptyTip = container.querySelector('.empty-tip');
+        if (emptyTip) emptyTip.remove();
+
+        const div = document.createElement('div');
+        div.className = `msg ${role}`;
+        if (role === 'ai' && isPlaceholder) {
+            div.textContent = '思考中...';
+            div.dataset.placeholder = 'true';
+        } else {
+            div.textContent = content;
+            if (sources && sources.length > 0) {
+                const srcDiv = document.createElement('div');
+                srcDiv.className = 'sources';
+                srcDiv.innerHTML = '📎 ' + sources.map(s => `<span>${s.filename}</span>`).join('');
+                div.appendChild(srcDiv);
+            }
+        }
+        container.appendChild(div);
+        chatHistory.push({ role, content, sources: sources || [] });
+        scrollChatToBottom();
+        return div;
+    }
+
+    function updateChatMessage(el, content, sources = null) {
+        el.innerHTML = '';
+        const textSpan = document.createElement('span');
+        textSpan.textContent = content;
+        el.appendChild(textSpan);
+        const cursor = document.createElement('span');
+        cursor.className = 'cursor-blink';
+        cursor.textContent = '▍';
+        el.appendChild(cursor);
+
+        if (sources && sources.length > 0) {
+            const cursorEl = el.querySelector('.cursor-blink');
+            if (cursorEl) cursorEl.remove();
+            const srcDiv = document.createElement('div');
+            srcDiv.className = 'sources';
+            srcDiv.innerHTML = '📎 ' + sources.map(s => `<span>${s.filename}</span>`).join('');
+            el.appendChild(srcDiv);
+            const lastIdx = chatHistory.length - 1;
+            if (lastIdx >= 0 && chatHistory[lastIdx].role === 'ai') {
+                chatHistory[lastIdx].sources = sources;
+            }
+        }
+        el.dataset.placeholder = 'false';
+        scrollChatToBottom();
+    }
+
+    function scrollChatToBottom() {
+        const container = $('chat-container');
+        container.scrollTop = container.scrollHeight;
+    }
+
+    function showQaMsg(text, type) {
+        const el = $('qa-msg');
+        el.className = 'msg-box ' + type;
+        el.textContent = text;
+        el.classList.remove('hidden');
+        setTimeout(() => el.classList.add('hidden'), 4000);
+    }
+
+    $('qa-send-btn').addEventListener('click', sendQuestion);
+
+    $('qa-input').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendQuestion();
+        }
+    });
+
+    async function sendQuestion() {
+    if (isStreaming) return;
+    const question = $('qa-input').value.trim();
+    if (!question) return;
+    $('qa-input').value = '';
+
+    addChatMessage('user', question);
+    hideMsg($('qa-msg'));
+
+    const aiMsgEl = addChatMessage('ai', '思考中...', true);
+    isStreaming = true;
+    let fullContent = '';
+
+    try {
+        // 第一步：尝试快速接口（工具/技能）
+        const fastResponse = await fetch(API_BASE + '/qa/ask-fast', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'token': token
+            },
+            body: JSON.stringify({ question: question })
+        });
+
+        const fastData = await fastResponse.json();
+
+        // 如果快速接口命中了工具或技能
+        if (fastData.answer) {
+            updateChatMessage(aiMsgEl, fastData.answer);
+            // 移除光标
+            const cursorEl = aiMsgEl.querySelector('.cursor-blink');
+            if (cursorEl) cursorEl.remove();
+            // 保存到历史
+            const lastIdx = chatHistory.length - 1;
+            if (lastIdx >= 0 && chatHistory[lastIdx].role === 'ai') {
+                chatHistory[lastIdx].content = fastData.answer;
+            }
+            isStreaming = false;
+            scrollChatToBottom();
+            return;
+        }
+
+        // 第二步：未命中 → 走流式 RAG 接口
+        const response = await fetch(API_BASE + '/qa/ask', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'token': token
+            },
+            body: JSON.stringify({ question: question })
+        });
+
+        if (!response.ok) throw new Error('请求失败');
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            const chunk = decoder.decode(value, { stream: true });
+            fullContent += chunk;
+            updateChatMessage(aiMsgEl, fullContent);
+            scrollChatToBottom();
+        }
+
+        // 流式输出完成后，移除光标
+        const cursorEl = aiMsgEl.querySelector('.cursor-blink');
+        if (cursorEl) cursorEl.remove();
+
+        // 解析来源
+        const srcMatch = fullContent.match(/---\n\*\*来源：\*\*\n([\s\S]*?)$/);
+        let sources = [];
+        if (srcMatch) {
+            const srcLines = srcMatch[1].split('\n').filter(s => s.trim().startsWith('-'));
+            sources = srcLines.map(s => ({ filename: s.trim().substring(2).trim() }));
+            const contentWithoutSources = fullContent.replace(/---\n\*\*来源：\*\*\n[\s\S]*$/, '').trim();
+            updateChatMessage(aiMsgEl, contentWithoutSources, sources);
+            const lastIdx = chatHistory.length - 1;
+            if (lastIdx >= 0 && chatHistory[lastIdx].role === 'ai') {
+                chatHistory[lastIdx].sources = sources;
+                chatHistory[lastIdx].content = contentWithoutSources;
+            }
+        } else {
+            const lastIdx = chatHistory.length - 1;
+            if (lastIdx >= 0 && chatHistory[lastIdx].role === 'ai') {
+                chatHistory[lastIdx].content = fullContent;
+            }
+        }
+
+    } catch (error) {
+        updateChatMessage(aiMsgEl, '请求失败，请重试');
+        showQaMsg('请求失败', 'error');
+    }
+    isStreaming = false;
+    scrollChatToBottom();
+}
+
+    // =========================================================
+    // 初始化
+    // =========================================================
+    if (token) {
+        showMain();
+    } else {
+        showLogin();
+    }
+</script>
+</body>
+</html>

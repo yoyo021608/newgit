@@ -1,0 +1,15 @@
+fastapi
+uvicorn[standard]
+sqlalchemy
+pymysql
+python-dotenv
+python-jose[cryptography]
+passlib[bcrypt]
+python-multipart
+PyPDF2
+python-docx
+chromadb
+openai
+requests
+rank-bm25
+# sentence-transformers
