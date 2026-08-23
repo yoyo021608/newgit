@@ -1,3 +1,4 @@
+#mcp客户端，通过 HTTP 请求调用 MCP 服务端的工具
 import requests
 import json
 

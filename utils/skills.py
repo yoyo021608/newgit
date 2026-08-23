@@ -1,4 +1,5 @@
 import re
+from utils.llm_client import call_llm
 
 
 class Skill:
@@ -11,41 +12,55 @@ class Skill:
 
 
 class TranslateSkill(Skill):
-    """翻译技能 - 模拟翻译"""
+    """翻译技能 - 使用通义千问"""
     name = "translate"
     description = "将中文翻译成英文，或英文翻译成中文"
 
     def execute(self, input_text: str) -> str:
-        # 简单模拟翻译（真实场景可接入翻译API）
-        if re.search(r'[\u4e00-\u9fa5]', input_text):
-            # 检测到中文，简单模拟英译
-            return f"[模拟翻译] {input_text} -> Hello, this is a simulated translation."
-        else:
-            return f"[模拟翻译] {input_text} -> 你好，这是模拟翻译。"
+        prompt = f"""请将以下文本翻译成{ '英文' if re.search(r'[\u4e00-\u9fa5]', input_text) else '中文' }。只返回翻译结果，不要添加任何额外说明。
+
+文本：{input_text}"""
+        try:
+            result = call_llm(prompt)
+            return result.strip()
+        except Exception as e:
+            return f"翻译失败: {str(e)}"
 
 
 class SummarizeSkill(Skill):
-    """总结技能 - 模拟总结"""
+    """总结技能 - 使用通义千问"""
     name = "summarize"
     description = "对文本进行简短总结"
 
     def execute(self, input_text: str) -> str:
-        words = input_text.split()
-        if len(words) <= 20:
-            return input_text
-        return f"[模拟总结] {input_text[:50]}... (共{len(words)}个词)"
+        prompt = f"""请对以下文本进行简洁的总结，提取核心要点。用3-5句话概括，不要超过100字。
+
+文本：{input_text}"""
+        try:
+            result = call_llm(prompt)
+            return result.strip()
+        except Exception as e:
+            return f"总结失败: {str(e)}"
 
 
 class CodeExplainSkill(Skill):
-    """代码解释技能"""
+    """代码解释技能 - 使用通义千问"""
     name = "code_explain"
     description = "解释一段代码的作用"
 
     def execute(self, input_text: str) -> str:
-        return f"[模拟代码解释] 这段代码的作用是：{input_text[:30]}... 我理解这是用于处理数据或实现某个功能。"
+        prompt = f"""请解释以下代码的作用。说明代码的功能、输入输出和主要逻辑。
+
+代码：
+{input_text}"""
+        try:
+            result = call_llm(prompt)
+            return result.strip()
+        except Exception as e:
+            return f"代码解释失败: {str(e)}"
 
 
-# 技能注册表
+# 技能注册表，键是技能名，值是技能实例
 SKILLS = {
     "translate": TranslateSkill(),
     "summarize": SummarizeSkill(),

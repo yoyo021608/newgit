@@ -1,8 +1,11 @@
-import re
+#混合检索的核心实现。 结合 BM25 关键词检索 + 向量检索，两种方法互补，提高检索召回率和准确率。
+import re  #正则表达式，用于分词（英文/数字）
+import os  #检查文件修改时间
+from datetime import datetime  #处理文件修改时间
 from rank_bm25 import BM25Okapi
 from sqlalchemy.orm import Session
 from models.documents import Document
-from utils.vector_store import search_similar
+from utils.vector_store import search_similar, update_document_in_vector_store
 
 
 def tokenize(text: str):
@@ -10,7 +13,7 @@ def tokenize(text: str):
     # 按非字母数字字符分割，转小写
     return re.findall(r'\w+', text.lower())
 
-
+#BM25 检索函数
 def bm25_search(query: str, documents_texts: list, top_k: int = 3):
     """
     对给定的文档列表进行 BM25 检索
@@ -21,12 +24,12 @@ def bm25_search(query: str, documents_texts: list, top_k: int = 3):
         return []
     # 分词
     tokenized_docs = [tokenize(doc) for doc in documents_texts]
-    bm25 = BM25Okapi(tokenized_docs)
-    tokenized_query = tokenize(query)
+    bm25 = BM25Okapi(tokenized_docs)  #创建 BM25 索引
+    tokenized_query = tokenize(query)  #对查询词分词
     scores = bm25.get_scores(tokenized_query)
     # 取 top_k
     scored = sorted(enumerate(scores), key=lambda x: x[1], reverse=True)
-    return scored[:top_k]
+    return scored[:top_k]  #返回前 top_k 个结果
 
 
 def hybrid_search(query: str, user_id: int, db: Session, top_k: int = 5):
@@ -43,15 +46,47 @@ def hybrid_search(query: str, user_id: int, db: Session, top_k: int = 5):
     doc_metas = []
     for doc in docs:
         try:
-            with open(doc.file_path, 'r', encoding='utf-8') as f:
-                content = f.read()
+            file_path = doc.file_path
+            if not os.path.exists(file_path):
+                continue
+
+            # 检查文件是否被修改
+            file_mtime = datetime.fromtimestamp(os.path.getmtime(file_path))
+
+            # 打印调试信息
+            print(f"🔍 检查文件: {doc.filename}, updated_at={doc.updated_at}, file_mtime={file_mtime}")
+
+            # 如果数据库没有记录更新时间，或者文件比记录新，则更新向量库
+            if not doc.updated_at or file_mtime > doc.updated_at.replace(tzinfo=None):
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                # 更新向量库
+                update_document_in_vector_store(
+                    doc.id,
+                    content,
+                    {'filename': doc.filename, 'user_id': user_id}
+                )
+                # 更新数据库记录
+                doc.updated_at = file_mtime
+                db.commit()
+                print(f"🔄 文档 {doc.filename} 已自动更新向量库")
                 doc_texts.append(content)
                 doc_metas.append({
                     'id': doc.id,
                     'filename': doc.filename,
                     'file_path': doc.file_path
                 })
-        except:
+            else:
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                doc_texts.append(content)
+                doc_metas.append({
+                    'id': doc.id,
+                    'filename': doc.filename,
+                    'file_path': doc.file_path
+                })
+        except Exception as e:
+            print(f"⚠️ 读取文档 {doc.filename} 失败: {e}")
             continue
 
     if not doc_texts:
@@ -86,17 +121,17 @@ def hybrid_search(query: str, user_id: int, db: Session, top_k: int = 5):
                 })
                 seen_ids.add(doc_id)
 
-    return combined[:top_k]
+    return combined[:top_k]  #取 combined 列表的前 top_k 个返回。
 
-
+#把 ChromaDB 返回的向量检索结果，转换成项目统一的文档格式。
 def format_vector_results(vector_results, doc_metas):
     """将向量检索结果格式化为统一格式"""
     items = []
     if not vector_results or not vector_results['documents']:
         return items
-    docs = vector_results['documents'][0]
-    metas = vector_results['metadatas'][0]
-    distances = vector_results['distances'][0] if 'distances' in vector_results else []
+    docs = vector_results['documents'][0]  #取出所有文档内容
+    metas = vector_results['metadatas'][0]  #取出所有元数据
+    distances = vector_results['distances'][0] if 'distances' in vector_results else []  #取出距离列表
     for i, (content, meta) in enumerate(zip(docs, metas)):
         items.append({
             'doc_id': meta.get('doc_id', 0),

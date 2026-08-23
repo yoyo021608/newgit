@@ -1,18 +1,19 @@
+#判断用户问题是否需要调用工具，并执行工具调用。
 import json
 from utils.llm_client import call_llm
 from utils.tools import TOOLS
 from utils.mcp_client import call_mcp_tool
 
-
+#关键词预判断
 def should_use_tools(user_question: str) -> bool:
     keywords = ["天气", "计算", "几点了", "现在", "多少", "加", "减", "乘", "除", "温度", "℃", "°C"]
     return any(k in user_question for k in keywords)
-
+#如果用户问题中包含任意一个关键词，返回 True
 
 def tool_agent(question: str) -> str:
     if not should_use_tools(question):
         return None
-
+#把工具列表转成易读的文本（给 LLM 看）
     tools_desc = "\n".join([
         f"- {t['function']['name']}: {t['function']['description']}"
         for t in TOOLS
@@ -31,13 +32,13 @@ def tool_agent(question: str) -> str:
 如果不需要调用工具，返回 {{"tool": "none"}}"""
 
     try:
-        response = call_llm(prompt)
+        response = call_llm(prompt) #调用通义千问非流式
         result = json.loads(response)
-        tool_name = result.get("tool")
-        arguments = result.get("arguments", {})
+        tool_name = result.get("tool")  #取出工具参数
+        arguments = result.get("arguments", {})  #取出工具参数
 
         if tool_name and tool_name != "none":
-            # 通过 MCP 调用工具
+            # 通过 MCP 客户端调用工具
             return call_mcp_tool(tool_name, arguments)
         return None
     except:

@@ -1,3 +1,4 @@
+#mcp服务端
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from utils.tools import get_current_weather, calculate, get_current_time
@@ -7,17 +8,17 @@ import os
 
 mcp_app = FastAPI(title="MCP Server", version="1.0.0")
 
-
+#接受post请求体
 class ToolCallRequest(BaseModel):
     tool: str
     arguments: dict
 
-
+#返回响应
 class ToolCallResponse(BaseModel):
     result: str
     status: str
 
-
+#列出所有可用工具，让调用方知道有哪些工具可以用。
 @mcp_app.get("/tools")
 def list_tools():
     return {
@@ -44,10 +45,10 @@ def call_tool(request: ToolCallRequest):
     try:
         if request.tool == "get_current_weather":
             city = request.arguments.get("city", "北京")
-            result = func(city)
+            result = func(city=city)
         elif request.tool == "calculate":
             expression = request.arguments.get("expression", "")
-            result = func(expression)
+            result = func(expression=expression)
         elif request.tool == "get_current_time":
             result = func()
         else:

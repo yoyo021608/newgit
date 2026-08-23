@@ -1,3 +1,4 @@
+#多 Agent 协作的核心实现
 from utils.llm_client import call_llm
 
 
@@ -16,7 +17,7 @@ class Agent:
 请完成你的任务，只输出结果，不要解释。"""
         return call_llm(prompt)
 
-
+#创建agent实例
 def multi_agent_task(text: str, task_type: str) -> str:
     """
     多智能体协作执行任务

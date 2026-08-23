@@ -1,5 +1,6 @@
+#读取不同格式的文件内容。
 import os
-import PyPDF2
+import PyPDF2  #解析 PDF 文件，提取文字
 from docx import Document as DocxDocument
 
 
@@ -11,10 +12,10 @@ def read_file(file_path: str) -> str:
             return f.read()
 
     elif ext == "pdf":
-        reader = PyPDF2.PdfReader(file_path)
+        reader = PyPDF2.PdfReader(file_path)  #创建pdf读取器
         text = ""
         for page in reader.pages:
-            text += page.extract_text() or ""
+            text += page.extract_text() or ""  #提取当前页文字
         return text
 
     elif ext == "docx":

@@ -17,27 +17,210 @@
             padding: 24px;
         }
 
-        .container {
-            max-width: 800px;
+        .app-wrapper {
+            display: flex;
+            max-width: 1100px;
             width: 100%;
             background: #ffffff;
             border-radius: 24px;
             box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
-            padding: 32px 36px;
-            min-height: 500px;
+            min-height: 600px;
+            overflow: hidden;
+            position: relative;
         }
 
-        h1 {
-            font-size: 24px;
+        .sidebar {
+            width: 220px;
+            min-width: 220px;
+            background: #f8fafc;
+            padding: 20px 16px 20px 16px;
+            border-right: 1px solid #eef2f8;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            min-height: 600px;
+            transition: width 0.3s ease, min-width 0.3s ease, padding 0.3s ease, border 0.3s ease;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        .sidebar.collapsed {
+            width: 0;
+            min-width: 0;
+            padding: 0;
+            border-right: none;
+        }
+
+        .sidebar-inner {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            opacity: 1;
+            transition: opacity 0.15s ease;
+            overflow: hidden;
+            min-width: 180px;
+        }
+        .sidebar.collapsed .sidebar-inner {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            flex-shrink: 0;
+        }
+
+        .sidebar-title {
+            font-size: 14px;
             font-weight: 600;
             color: #1e293b;
-            text-align: center;
-            margin-bottom: 28px;
+        }
+
+        .sidebar-new-btn {
+            background: #dbeafe;
+            border: none;
+            color: #1e4f8a;
+            border-radius: 20px;
+            padding: 4px 14px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.2s;
+            white-space: nowrap;
+        }
+        .sidebar-new-btn:hover { background: #bfdbfe; }
+
+        .session-list {
+            flex: 1;
+            overflow-y: auto;
+            margin-top: 4px;
+        }
+
+        .session-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-bottom: 2px;
+            font-size: 13px;
+            color: #334155;
+        }
+        .session-item:hover { background: #f1f5f9; }
+        .session-item.active {
+            background: #dbeafe;
+            color: #1e4f8a;
+            font-weight: 500;
+        }
+
+        .session-name {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+        .session-name-input {
+            border: 1px solid #d0d7e0;
+            border-radius: 6px;
+            padding: 2px 6px;
+            font-size: 13px;
+            width: 100%;
+            outline: none;
+        }
+        .session-name-input:focus { border-color: #7b9edb; }
+
+        .session-delete {
+            background: none;
+            border: none;
+            color: #b91c1c;
+            font-size: 14px;
+            cursor: pointer;
+            padding: 0 4px;
+            opacity: 0.4;
+            transition: 0.2s;
+        }
+        .session-delete:hover { opacity: 1; }
+
+        .sidebar-footer {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #eef2f8;
+            font-size: 12px;
+            color: #94a3b8;
+            flex-shrink: 0;
+        }
+        .sidebar-footer span { cursor: default; }
+
+        .main-content {
+            flex: 1;
+            padding: 28px 32px 32px 32px;
+            min-width: 0;
+            transition: padding 0.3s ease;
+        }
+
+        .container {
+            max-width: 100%;
+            width: 100%;
+            background: transparent;
+            border-radius: 0;
+            box-shadow: none;
+            padding: 0;
+            min-height: auto;
+        }
+
+        .main-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .main-header h1 {
+            font-size: 22px;
+            font-weight: 600;
+            color: #1e293b;
+            margin: 0;
+        }
+
+        .sidebar-toggle {
+            width: 36px;
+            height: 36px;
+            border: 1px solid #e2e8f0;
+            background: #ffffff;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 14px;
+            color: #64748b;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .sidebar-toggle:hover {
+            background: #f1f5f9;
+            border-color: #cbd5e1;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
         .hidden { display: none !important; }
 
-        /* 登录页 */
+        #page-login, #page-register, #page-forgot {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 40px 0;
+        }
+        #page-login h1, #page-register h1, #page-forgot h1 {
+            text-align: center;
+            padding-left: 0;
+        }
+
         #page-login .login-box { max-width: 340px; margin: 0 auto; }
         #page-login label { display: block; font-size: 13px; font-weight: 500; color: #334155; margin-top: 14px; margin-bottom: 4px; }
         #page-login input {
@@ -64,7 +247,6 @@
         .alert-msg.error { background: #fef2f2; color: #991b1b; }
         .alert-msg.info { background: #eff6ff; color: #1e40af; }
 
-        /* 注册页 */
         #page-register .register-box { max-width: 340px; margin: 0 auto; }
         #page-register label { display: block; font-size: 13px; font-weight: 500; color: #334155; margin-top: 14px; margin-bottom: 4px; }
         #page-register input {
@@ -85,7 +267,6 @@
         #page-register .back-link:hover { text-decoration: underline; }
         .password-hint { font-size: 12px; color: #94a3b8; margin-top: 4px; }
 
-        /* 忘记密码页 */
         #page-forgot .forgot-box { max-width: 340px; margin: 0 auto; }
         #page-forgot label { display: block; font-size: 13px; font-weight: 500; color: #334155; margin-top: 14px; margin-bottom: 4px; }
         #page-forgot input {
@@ -105,10 +286,10 @@
         }
         #page-forgot .back-link:hover { text-decoration: underline; }
 
-        /* 主界面 */
         #main-page .nav {
             display: flex; gap: 8px; border-bottom: 1px solid #e9edf4;
-            padding-bottom: 12px; margin-bottom: 16px;
+            padding-bottom: 12px;
+            margin-bottom: 16px;
         }
         #main-page .nav button {
             padding: 6px 20px; border: none; border-radius: 30px;
@@ -122,7 +303,6 @@
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        /* 文档管理 */
         .file-upload-row {
             display: flex; gap: 10px; align-items: center;
         }
@@ -159,7 +339,6 @@
         }
         .pagination button.active-page { background: #dbeafe; color: #1e4f8a; font-weight: 500; }
 
-        /* 问答聊天框 */
         .chat-container {
             border: 1px solid #eef2f8; border-radius: 16px; padding: 16px;
             height: 380px; overflow-y: auto; background: #fafcff; margin-bottom: 12px;
@@ -215,123 +394,364 @@
         }
 
         hr { margin: 14px 0; border: none; border-top: 1px solid #eef2f8; }
-
         .msg-box {
             padding: 8px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 10px;
         }
         .msg-box.success { background: #ecfdf5; color: #065f46; }
         .msg-box.error { background: #fef2f2; color: #991b1b; }
         .msg-box.info { background: #eff6ff; color: #1e40af; }
+
+        /* 页面底部注销链接样式 */
+        .footer-delete-link {
+            text-align: center;
+            padding: 20px 0 0 0;
+            border-top: 1px solid #eef2f8;
+            margin-top: 20px;
+        }
+        .footer-delete-link a {
+            color: #b91c1c;
+            font-size: 13px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .footer-delete-link a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 720px) {
+            .sidebar { display: none; }
+            .app-wrapper { max-width: 100%; }
+            .main-content { padding: 20px; }
+        }
     </style>
 </head>
 <body>
 
-<div class="container" id="app">
+<div class="app-wrapper">
 
-    <!-- 登录页 -->
-    <div id="page-login">
-        <h1>📚 知识库</h1>
-        <div class="login-box">
-            <div id="login-msg" class="alert-msg hidden"></div>
-            <label>用户名</label>
-            <input id="login-username" placeholder="请输入用户名">
-            <label>密码</label>
-            <input id="login-password" type="password" placeholder="请输入密码">
-            <button class="login-btn" id="login-btn">登 录</button>
-            <div class="login-links">
-                <a id="go-register-link">没有账户？去注册</a>
-                <a id="go-forgot-link">忘记密码？</a>
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-inner">
+            <div class="sidebar-header">
+                <span class="sidebar-title">💬 会话</span>
+                <button class="sidebar-new-btn" id="new-session-btn">+ 新建</button>
+            </div>
+            <div class="session-list" id="session-list">
+                <div style="color:#94a3b8; font-size:13px; padding:12px 8px; text-align:center;">暂无会话</div>
+            </div>
+            <div class="sidebar-footer">
+                <span id="session-count">0 个会话</span>
             </div>
         </div>
     </div>
 
-    <!-- 注册页 -->
-    <div id="page-register" class="hidden">
-        <h1>📚 知识库</h1>
-        <div class="register-box">
-            <div id="register-msg" class="alert-msg hidden"></div>
-            <label>用户名</label>
-            <input id="register-username" placeholder="请设置用户名">
-            <label>邮箱</label>
-            <input id="register-email" placeholder="请输入邮箱">
-            <label>密码</label>
-            <input id="register-password" type="password" placeholder="至少8位，含字母和数字">
-            <div class="password-hint">密码需至少8位，包含字母和数字</div>
-            <button class="register-btn" id="register-btn">注 册</button>
-            <a class="back-link" id="go-login-link">已有账户？去登录</a>
-        </div>
-    </div>
+    <div class="main-content">
 
-    <!-- 忘记密码页 -->
-    <div id="page-forgot" class="hidden">
-        <h1>📚 知识库</h1>
-        <div class="forgot-box">
-            <div id="forgot-msg" class="alert-msg hidden"></div>
-            <label>用户名</label>
-            <input id="forgot-username" placeholder="请输入用户名">
-            <label>邮箱</label>
-            <input id="forgot-email" placeholder="请输入注册邮箱">
-            <label>新密码</label>
-            <input id="forgot-new-password" type="password" placeholder="至少8位，含字母和数字">
-            <button class="forgot-btn" id="forgot-btn">重置密码</button>
-            <a class="back-link" id="forgot-back-link">返回登录</a>
-        </div>
-    </div>
+        <div class="container" id="app">
 
-    <!-- 主界面 -->
-    <div id="main-page" class="hidden">
-        <h1>📚 知识库</h1>
-        <div class="nav">
-            <button class="active" data-tab="docs">📄 文档管理</button>
-            <button data-tab="qa">💬 智能问答</button>
-            <button class="logout" id="logout-btn">退出</button>
-        </div>
-
-        <!-- 文档 -->
-        <div id="tab-docs" class="tab-content active">
-            <div id="docs-msg" class="msg-box hidden"></div>
-            <div class="file-upload-row">
-                <input type="file" id="file-input" accept=".txt,.md,.pdf,.docx">
-                <button class="upload-btn" id="upload-btn">上传</button>
+            <div id="page-login">
+                <h1>知识库</h1>
+                <div class="login-box">
+                    <div id="login-msg" class="alert-msg hidden"></div>
+                    <label>用户名</label>
+                    <input id="login-username" placeholder="请输入用户名">
+                    <label>密码</label>
+                    <input id="login-password" type="password" placeholder="请输入密码">
+                    <button class="login-btn" id="login-btn">登 录</button>
+                    <div class="login-links">
+                        <a id="go-register-link">没有账户？去注册</a>
+                        <a id="go-forgot-link">忘记密码？</a>
+                    </div>
+                </div>
+                <!-- 页面底部注销账户 -->
+                <div class="footer-delete-link">
+                    <a id="delete-account-link">注销账户</a>
+                </div>
             </div>
-            <hr>
-            <div class="file-list" id="file-list"></div>
-            <div class="pagination" id="pagination-controls"></div>
-        </div>
 
-        <!-- 问答 -->
-        <div id="tab-qa" class="tab-content">
-            <div id="qa-msg" class="msg-box hidden"></div>
-            <div class="chat-container" id="chat-container">
-                <div class="empty-tip">💡 上传文档后，在这里提问...</div>
+            <div id="page-register" class="hidden">
+                <h1>知识库</h1>
+                <div class="register-box">
+                    <div id="register-msg" class="alert-msg hidden"></div>
+                    <label>用户名</label>
+                    <input id="register-username" placeholder="请设置用户名">
+                    <label>邮箱</label>
+                    <input id="register-email" placeholder="请输入邮箱">
+                    <label>密码</label>
+                    <input id="register-password" type="password" placeholder="至少8位，含字母和数字">
+                    <div class="password-hint">密码需至少8位，包含字母和数字</div>
+                    <button class="register-btn" id="register-btn">注 册</button>
+                    <a class="back-link" id="go-login-link">已有账户？去登录</a>
+                </div>
             </div>
-            <div class="chat-input-row">
-                <textarea id="qa-input" placeholder="输入你的问题..." rows="1"></textarea>
-                <button class="send-btn" id="qa-send-btn">发送</button>
+
+            <div id="page-forgot" class="hidden">
+                <h1>知识库</h1>
+                <div class="forgot-box">
+                    <div id="forgot-msg" class="alert-msg hidden"></div>
+                    <label>用户名</label>
+                    <input id="forgot-username" placeholder="请输入用户名">
+                    <label>邮箱</label>
+                    <input id="forgot-email" placeholder="请输入注册邮箱">
+                    <label>新密码</label>
+                    <input id="forgot-new-password" type="password" placeholder="至少8位，含字母和数字">
+                    <button class="forgot-btn" id="forgot-btn">重置密码</button>
+                    <a class="back-link" id="forgot-back-link">返回登录</a>
+                </div>
             </div>
+
+            <div id="main-page" class="hidden">
+                <div class="main-header">
+                    <button class="sidebar-toggle" id="sidebar-toggle" title="切换侧边栏">◀</button>
+                    <h1>知识库</h1>
+                </div>
+                <div class="nav">
+                    <button class="active" data-tab="docs">📄 文档管理</button>
+                    <button data-tab="qa">💬 智能问答</button>
+                    <button class="logout" id="logout-btn">退出</button>
+                </div>
+
+                <div id="tab-docs" class="tab-content active">
+                    <div id="docs-msg" class="msg-box hidden"></div>
+                    <div class="file-upload-row">
+                        <input type="file" id="file-input" accept=".txt,.md,.pdf,.docx">
+                        <button class="upload-btn" id="upload-btn">上传</button>
+                    </div>
+                    <hr>
+                    <div class="file-list" id="file-list"></div>
+                    <div class="pagination" id="pagination-controls"></div>
+                </div>
+
+                <div id="tab-qa" class="tab-content">
+                    <div id="qa-msg" class="msg-box hidden"></div>
+                    <div class="chat-container" id="chat-container">
+                        <div class="empty-tip">💡 上传文档后，在这里提问...</div>
+                    </div>
+                    <div class="chat-input-row">
+                        <textarea id="qa-input" placeholder="输入你的问题..." rows="1"></textarea>
+                        <button class="send-btn" id="qa-send-btn">发送</button>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 
 </div>
 
 <script>
-    // =========================================================
-    // 状态
-    // =========================================================
     let token = localStorage.getItem('token') || '';
     let currentPage = 1;
     const PAGE_SIZE = 5;
     let allDocs = [];
     let chatHistory = [];
     let isStreaming = false;
+    let currentSessionId = null;
+    let sessions = [];
+    let editingSessionId = null;
 
     const API_BASE = 'http://127.0.0.1:8001/api';
-
     const $ = id => document.getElementById(id);
 
-    // =========================================================
-    // 工具函数
-    // =========================================================
+    const sidebar = document.getElementById('sidebar');
+    const toggleBtn = document.getElementById('sidebar-toggle');
+    if (toggleBtn) {
+        toggleBtn.addEventListener('click', function() {
+            sidebar.classList.toggle('collapsed');
+            this.textContent = sidebar.classList.contains('collapsed') ? '▶' : '◀';
+        });
+    }
+
+    async function fetchSessions() {
+        if (!token) return [];
+        try {
+            const res = await request('GET', '/sessions/');
+            return Array.isArray(res) ? res : [];
+        } catch (e) {
+            return [];
+        }
+    }
+
+    async function createSession(name) {
+        if (!token) return null;
+        try {
+            return await request('POST', '/sessions/', { name });
+        } catch (e) {
+            return null;
+        }
+    }
+
+    async function deleteSessionApi(sessionId) {
+        if (!token) return false;
+        try {
+            await request('DELETE', `/sessions/${sessionId}`);
+            return true;
+        } catch (e) {
+            return false;
+        }
+    }
+
+    async function renameSessionApi(sessionId, newName) {
+        if (!token) return null;
+        try {
+            const result = await request('PUT', `/sessions/${sessionId}`, { name: newName });
+            return result;
+        } catch (e) {
+            console.error('重命名失败:', e);
+            return null;
+        }
+    }
+
+    async function fetchSessionHistory(sessionId) {
+        if (!token) return [];
+        try {
+            const res = await request('GET', `/sessions/${sessionId}/history`);
+            return Array.isArray(res) ? res : [];
+        } catch (e) {
+            return [];
+        }
+    }
+
+    function renderSessions() {
+        const list = document.getElementById('session-list');
+        if (!sessions || sessions.length === 0) {
+            list.innerHTML = '<div style="color:#94a3b8; font-size:13px; padding:12px 8px; text-align:center;">暂无会话</div>';
+            document.getElementById('session-count').textContent = '0 个会话';
+            return;
+        }
+        let html = '';
+        for (const s of sessions) {
+            const isActive = (s.id === currentSessionId);
+            const isEditing = (editingSessionId === s.id);
+            html += `<div class="session-item ${isActive ? 'active' : ''}" data-id="${s.id}">`;
+            if (isEditing) {
+                html += `<input class="session-name-input" id="session-edit-${s.id}" value="${s.name}" data-id="${s.id}" />`;
+            } else {
+                html += `<span class="session-name" data-id="${s.id}">${s.name}</span>`;
+            }
+            html += `<button class="session-delete" data-id="${s.id}" title="删除会话">✕</button>`;
+            html += `</div>`;
+        }
+        list.innerHTML = html;
+        document.getElementById('session-count').textContent = `${sessions.length} 个会话`;
+
+        list.querySelectorAll('.session-name').forEach(el => {
+            el.addEventListener('click', function(e) {
+                const id = parseInt(this.dataset.id);
+                if (editingSessionId) return;
+                switchSession(id);
+            });
+        });
+
+        list.querySelectorAll('.session-name').forEach(el => {
+            el.addEventListener('dblclick', function(e) {
+                const id = parseInt(this.dataset.id);
+                startEditing(id);
+            });
+        });
+
+        list.querySelectorAll('.session-delete').forEach(el => {
+            el.addEventListener('click', async function(e) {
+                e.stopPropagation();
+                const id = parseInt(this.dataset.id);
+                if (!confirm('确定删除这个会话吗？')) return;
+                const ok = await deleteSessionApi(id);
+                if (ok) {
+                    sessions = sessions.filter(s => s.id !== id);
+                    if (currentSessionId === id) {
+                        currentSessionId = null;
+                        chatHistory = [];
+                        renderChatHistory();
+                    }
+                    renderSessions();
+                }
+            });
+        });
+
+        list.querySelectorAll('.session-name-input').forEach(el => {
+            el.addEventListener('keydown', async function(e) {
+                if (e.key === 'Enter') {
+                    const id = parseInt(this.dataset.id);
+                    const newName = this.value.trim();
+                    if (newName) {
+                        const result = await renameSessionApi(id, newName);
+                        if (result) {
+                            const session = sessions.find(s => s.id === id);
+                            if (session) session.name = result.name;
+                            editingSessionId = null;
+                            renderSessions();
+                        }
+                    } else {
+                        editingSessionId = null;
+                        renderSessions();
+                    }
+                }
+                if (e.key === 'Escape') {
+                    editingSessionId = null;
+                    renderSessions();
+                }
+            });
+            el.addEventListener('blur', function() {
+                editingSessionId = null;
+                renderSessions();
+            });
+        });
+    }
+
+    function startEditing(id) {
+        editingSessionId = id;
+        renderSessions();
+        setTimeout(() => {
+            const input = document.getElementById(`session-edit-${id}`);
+            if (input) {
+                input.focus();
+                input.select();
+            }
+        }, 100);
+    }
+
+    async function switchSession(sessionId) {
+        if (sessionId === currentSessionId) return;
+        currentSessionId = sessionId;
+        try {
+            const history = await fetchSessionHistory(sessionId);
+            if (history && history.length > 0) {
+                const merged = [];
+                for (const h of history) {
+                    let sources = h.sources || [];
+                    if (typeof sources === 'string') {
+                        try { sources = JSON.parse(sources); } catch(e) { sources = []; }
+                    }
+                    merged.push({ role: 'user', content: h.question, sources: [] });
+                    merged.push({ role: 'ai', content: h.answer, sources: sources });
+                }
+                chatHistory = merged;
+            } else {
+                chatHistory = [];
+            }
+        } catch (e) {
+            console.error('加载会话历史失败:', e);
+            chatHistory = [];
+        }
+        renderChatHistory();
+        renderSessions();
+    }
+
+    async function createNewSession() {
+        if (!token) return;
+        const now = new Date();
+        const name = `会话 ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
+        const result = await createSession(name);
+        if (result && result.id) {
+            sessions.unshift(result);
+            currentSessionId = result.id;
+            chatHistory = [];
+            renderChatHistory();
+            renderSessions();
+            $('qa-input').value = '';
+            switchTab('qa');
+        }
+    }
+
     function showMsg(el, text, type) {
         el.className = 'alert-msg ' + type;
         el.textContent = text;
@@ -361,14 +781,12 @@
         return await res.json();
     }
 
-    // =========================================================
-    // 页面切换
-    // =========================================================
     function showLogin() {
         document.getElementById('page-login').classList.remove('hidden');
         document.getElementById('page-register').classList.add('hidden');
         document.getElementById('page-forgot').classList.add('hidden');
         document.getElementById('main-page').classList.add('hidden');
+        document.getElementById('sidebar').classList.add('hidden');
     }
 
     function showRegister() {
@@ -376,6 +794,7 @@
         document.getElementById('page-register').classList.remove('hidden');
         document.getElementById('page-forgot').classList.add('hidden');
         document.getElementById('main-page').classList.add('hidden');
+        document.getElementById('sidebar').classList.add('hidden');
     }
 
     function showForgot() {
@@ -383,49 +802,83 @@
         document.getElementById('page-register').classList.add('hidden');
         document.getElementById('page-forgot').classList.remove('hidden');
         document.getElementById('main-page').classList.add('hidden');
+        document.getElementById('sidebar').classList.add('hidden');
     }
 
     async function loadHistory() {
-    if (!token) return;
-    try {
-        const res = await request('GET', '/qa/history');
-        console.log('历史记录原始数据:', res);
-        if (Array.isArray(res) && res.length > 0) {
-            let merged = [];
-            for (let i = 0; i < res.length; i++) {
-                merged.push({ role: 'user', content: res[i].question, sources: [] });
-                // sources 可能是字符串 '[]'，需要解析为数组
-                let sources = res[i].sources || [];
-                if (typeof sources === 'string') {
-                    try {
-                        sources = JSON.parse(sources);
-                    } catch(e) {
-                        sources = [];
+        if (!token) return;
+        try {
+            const res = await request('GET', '/qa/history');
+            if (Array.isArray(res) && res.length > 0) {
+                let merged = [];
+                for (let i = 0; i < res.length; i++) {
+                    merged.push({ role: 'user', content: res[i].question, sources: [] });
+                    let sources = res[i].sources || [];
+                    if (typeof sources === 'string') {
+                        try {
+                            sources = JSON.parse(sources);
+                        } catch(e) {
+                            sources = [];
+                        }
                     }
+                    merged.push({ role: 'ai', content: res[i].answer, sources: sources });
                 }
-                merged.push({ role: 'ai', content: res[i].answer, sources: sources });
+                chatHistory = merged;
+                renderChatHistory();
             }
-            chatHistory = merged;
-            renderChatHistory();
+        } catch (e) {
+            console.log('加载历史记录失败:', e);
         }
-    } catch (e) {
-        console.log('加载历史记录失败:', e);
     }
-}
+
+    async function loadSessionsAndHistory() {
+        if (!token) return;
+        sessions = await fetchSessions();
+        if (sessions.length > 0) {
+            currentSessionId = sessions[0].id;
+            try {
+                const history = await fetchSessionHistory(currentSessionId);
+                if (history && history.length > 0) {
+                    const merged = [];
+                    for (const h of history) {
+                        let sources = h.sources || [];
+                        if (typeof sources === 'string') {
+                            try { sources = JSON.parse(sources); } catch(e) { sources = []; }
+                        }
+                        merged.push({ role: 'user', content: h.question, sources: [] });
+                        merged.push({ role: 'ai', content: h.answer, sources: sources });
+                    }
+                    chatHistory = merged;
+                } else {
+                    chatHistory = [];
+                }
+            } catch (e) {
+                chatHistory = [];
+            }
+        } else {
+            currentSessionId = null;
+            chatHistory = [];
+            const result = await createSession('默认会话');
+            if (result && result.id) {
+                sessions = [result];
+                currentSessionId = result.id;
+            }
+        }
+        renderSessions();
+        renderChatHistory();
+    }
 
     function showMain() {
         document.getElementById('page-login').classList.add('hidden');
         document.getElementById('page-register').classList.add('hidden');
         document.getElementById('page-forgot').classList.add('hidden');
         document.getElementById('main-page').classList.remove('hidden');
+        document.getElementById('sidebar').classList.remove('hidden');
         loadDocs();
         switchTab('docs');
-        loadHistory();
+        loadSessionsAndHistory();
     }
 
-    // =========================================================
-    // Tab 切换
-    // =========================================================
     function switchTab(tab) {
         document.querySelectorAll('[data-tab]').forEach(b => b.classList.remove('active'));
         document.querySelector(`[data-tab="${tab}"]`)?.classList.add('active');
@@ -442,11 +895,6 @@
         });
     });
 
-    // =========================================================
-    // 认证相关
-    // =========================================================
-
-    // 注册
     $('register-btn').addEventListener('click', async function() {
         const username = $('register-username').value.trim();
         const email = $('register-email').value.trim();
@@ -476,7 +924,6 @@
         }
     });
 
-    // 登录
     $('login-btn').addEventListener('click', async function() {
         const username = $('login-username').value.trim();
         const password = $('login-password').value;
@@ -496,7 +943,6 @@
         }
     });
 
-    // 忘记密码
     $('forgot-btn').addEventListener('click', async function() {
         const username = $('forgot-username').value.trim();
         const email = $('forgot-email').value.trim();
@@ -520,13 +966,11 @@
         }
     });
 
-    // 切换页面
     $('go-register-link').addEventListener('click', showRegister);
     $('go-login-link').addEventListener('click', showLogin);
     $('go-forgot-link').addEventListener('click', showForgot);
     $('forgot-back-link').addEventListener('click', showLogin);
 
-    // 回车触发
     ['login-username', 'login-password'].forEach(id => {
         $(id).addEventListener('keydown', e => { if (e.key === 'Enter') $('login-btn').click(); });
     });
@@ -537,17 +981,79 @@
         $(id).addEventListener('keydown', e => { if (e.key === 'Enter') $('forgot-btn').click(); });
     });
 
-    // 退出
     $('logout-btn').addEventListener('click', function() {
         localStorage.removeItem('token');
         token = '';
         chatHistory = [];
+        sessions = [];
+        currentSessionId = null;
         showLogin();
     });
 
-    // =========================================================
-    // 文档管理
-    // =========================================================
+    // 注销账户 - 页面底部触发，需输入用户名和密码确认
+    $('delete-account-link').addEventListener('click', async function() {
+        const username = prompt('请输入要注销的用户名：');
+        if (username === null) return;
+        if (!username.trim()) {
+            alert('用户名不能为空');
+            return;
+        }
+
+        const password = prompt('请输入密码以确认身份：');
+        if (password === null) return;
+        if (!password.trim()) {
+            alert('密码不能为空');
+            return;
+        }
+
+        try {
+            // 先验证用户名密码
+            const loginRes = await fetch(API_BASE + '/users/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: username.trim(), password: password.trim() })
+            });
+            const loginData = await loginRes.json();
+
+            if (!loginRes.ok || !loginData.access_token) {
+                alert('❌ 用户名或密码错误，注销失败');
+                return;
+            }
+
+            // 二次确认
+            if (!confirm(`⚠️ 确认注销账户 "${username.trim()}" 吗？\n\n此操作将永久删除该用户的所有：\n- 文档（含物理文件）\n- 聊天记录\n- 会话\n\n数据不可恢复！`)) {
+                return;
+            }
+
+            // 执行注销
+            const deleteRes = await fetch(API_BASE + '/users/me', {
+                method: 'DELETE',
+                headers: { 'token': loginData.access_token }
+            });
+
+            if (deleteRes.ok) {
+                // 如果注销的是当前登录用户，清除本地 token
+                if (token) {
+                    localStorage.removeItem('token');
+                    token = '';
+                    chatHistory = [];
+                    sessions = [];
+                    currentSessionId = null;
+                    showLogin();
+                }
+                alert('✅ 账户 "' + username.trim() + '" 已成功注销');
+                location.reload();
+            } else {
+                const errData = await deleteRes.json();
+                alert('❌ 注销失败：' + (errData.detail || '未知错误'));
+            }
+        } catch (e) {
+            alert('❌ 网络错误，请稍后重试');
+        }
+    });
+
+    document.getElementById('new-session-btn').addEventListener('click', createNewSession);
+
     async function loadDocs() {
         if (!token) return;
         try {
@@ -638,9 +1144,6 @@
         setTimeout(() => el.classList.add('hidden'), 3000);
     }
 
-    // =========================================================
-    // 问答 - 聊天框 + 流式 + 历史记录 + 来源精确显示
-    // =========================================================
     function renderChatHistory() {
         const container = $('chat-container');
         if (chatHistory.length === 0) {
@@ -740,106 +1243,102 @@
     });
 
     async function sendQuestion() {
-    if (isStreaming) return;
-    const question = $('qa-input').value.trim();
-    if (!question) return;
-    $('qa-input').value = '';
+        if (isStreaming) return;
+        const question = $('qa-input').value.trim();
+        if (!question) return;
+        $('qa-input').value = '';
 
-    addChatMessage('user', question);
-    hideMsg($('qa-msg'));
+        addChatMessage('user', question);
+        hideMsg($('qa-msg'));
 
-    const aiMsgEl = addChatMessage('ai', '思考中...', true);
-    isStreaming = true;
-    let fullContent = '';
+        const aiMsgEl = addChatMessage('ai', '思考中...', true);
+        isStreaming = true;
+        let fullContent = '';
 
-    try {
-        // 第一步：尝试快速接口（工具/技能）
-        const fastResponse = await fetch(API_BASE + '/qa/ask-fast', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'token': token
-            },
-            body: JSON.stringify({ question: question })
-        });
+        try {
+            const fastResponse = await fetch(API_BASE + '/qa/ask-fast', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token
+                },
+                body: JSON.stringify({
+                    question: question,
+                    session_id: currentSessionId
+                })
+            });
 
-        const fastData = await fastResponse.json();
+            const fastData = await fastResponse.json();
 
-        // 如果快速接口命中了工具或技能
-        if (fastData.answer) {
-            updateChatMessage(aiMsgEl, fastData.answer);
-            // 移除光标
+            if (fastData.answer) {
+                updateChatMessage(aiMsgEl, fastData.answer);
+                const cursorEl = aiMsgEl.querySelector('.cursor-blink');
+                if (cursorEl) cursorEl.remove();
+                const lastIdx = chatHistory.length - 1;
+                if (lastIdx >= 0 && chatHistory[lastIdx].role === 'ai') {
+                    chatHistory[lastIdx].content = fastData.answer;
+                }
+                isStreaming = false;
+                scrollChatToBottom();
+                return;
+            }
+
+            const response = await fetch(API_BASE + '/qa/ask', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': token
+                },
+                body: JSON.stringify({
+                    question: question,
+                    session_id: currentSessionId
+                })
+            });
+
+            if (!response.ok) throw new Error('请求失败');
+
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                const chunk = decoder.decode(value, { stream: true });
+                fullContent += chunk;
+                updateChatMessage(aiMsgEl, fullContent);
+                scrollChatToBottom();
+            }
+
             const cursorEl = aiMsgEl.querySelector('.cursor-blink');
             if (cursorEl) cursorEl.remove();
-            // 保存到历史
-            const lastIdx = chatHistory.length - 1;
-            if (lastIdx >= 0 && chatHistory[lastIdx].role === 'ai') {
-                chatHistory[lastIdx].content = fastData.answer;
+
+            const srcMatch = fullContent.match(/---\n\*\*来源：\*\*\n([\s\S]*?)$/);
+            let sources = [];
+            if (srcMatch) {
+                const srcLines = srcMatch[1].split('\n').filter(s => s.trim().startsWith('-'));
+                sources = srcLines.map(s => ({ filename: s.trim().substring(2).trim() }));
+                const contentWithoutSources = fullContent.replace(/---\n\*\*来源：\*\*\n[\s\S]*$/, '').trim();
+                updateChatMessage(aiMsgEl, contentWithoutSources, sources);
+                const lastIdx = chatHistory.length - 1;
+                if (lastIdx >= 0 && chatHistory[lastIdx].role === 'ai') {
+                    chatHistory[lastIdx].sources = sources;
+                    chatHistory[lastIdx].content = contentWithoutSources;
+                }
+            } else {
+                const lastIdx = chatHistory.length - 1;
+                if (lastIdx >= 0 && chatHistory[lastIdx].role === 'ai') {
+                    chatHistory[lastIdx].content = fullContent;
+                }
             }
-            isStreaming = false;
-            scrollChatToBottom();
-            return;
+
+        } catch (error) {
+            updateChatMessage(aiMsgEl, '请求失败，请重试');
+            showQaMsg('请求失败', 'error');
         }
-
-        // 第二步：未命中 → 走流式 RAG 接口
-        const response = await fetch(API_BASE + '/qa/ask', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'token': token
-            },
-            body: JSON.stringify({ question: question })
-        });
-
-        if (!response.ok) throw new Error('请求失败');
-
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder();
-
-        while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
-            const chunk = decoder.decode(value, { stream: true });
-            fullContent += chunk;
-            updateChatMessage(aiMsgEl, fullContent);
-            scrollChatToBottom();
-        }
-
-        // 流式输出完成后，移除光标
-        const cursorEl = aiMsgEl.querySelector('.cursor-blink');
-        if (cursorEl) cursorEl.remove();
-
-        // 解析来源
-        const srcMatch = fullContent.match(/---\n\*\*来源：\*\*\n([\s\S]*?)$/);
-        let sources = [];
-        if (srcMatch) {
-            const srcLines = srcMatch[1].split('\n').filter(s => s.trim().startsWith('-'));
-            sources = srcLines.map(s => ({ filename: s.trim().substring(2).trim() }));
-            const contentWithoutSources = fullContent.replace(/---\n\*\*来源：\*\*\n[\s\S]*$/, '').trim();
-            updateChatMessage(aiMsgEl, contentWithoutSources, sources);
-            const lastIdx = chatHistory.length - 1;
-            if (lastIdx >= 0 && chatHistory[lastIdx].role === 'ai') {
-                chatHistory[lastIdx].sources = sources;
-                chatHistory[lastIdx].content = contentWithoutSources;
-            }
-        } else {
-            const lastIdx = chatHistory.length - 1;
-            if (lastIdx >= 0 && chatHistory[lastIdx].role === 'ai') {
-                chatHistory[lastIdx].content = fullContent;
-            }
-        }
-
-    } catch (error) {
-        updateChatMessage(aiMsgEl, '请求失败，请重试');
-        showQaMsg('请求失败', 'error');
+        isStreaming = false;
+        scrollChatToBottom();
     }
-    isStreaming = false;
-    scrollChatToBottom();
-}
 
-    // =========================================================
-    // 初始化
-    // =========================================================
     if (token) {
         showMain();
     } else {

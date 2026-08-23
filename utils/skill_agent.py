@@ -1,3 +1,4 @@
+#技能调用agent
 import json
 import re
 from utils.llm_client import call_llm
@@ -10,14 +11,14 @@ def should_use_skill(user_question: str) -> bool:
                 "翻译并分析"]
     return any(k in user_question for k in keywords)
 
-
+#提取内容
 def extract_content(question: str, keyword: str) -> str:
     """提取引号内的内容，或去掉关键词后的剩余部分"""
-    match = re.search(r'["\'](.*?)["\']', question)
+    match = re.search(r'["\'](.*?)["\']', question)  #用正则匹配引号内的内容（单引号或双引号）
     if match:
         return match.group(1)
     content = question.replace(keyword, "").replace("：", "").replace(":", "").strip()
-    return content if content else question
+    return content if content else question  #如果去掉后为空，返回原问题
 
 
 def skill_agent(question: str) -> str:
@@ -31,7 +32,7 @@ def skill_agent(question: str) -> str:
         return multi_agent_task(content, "translate_summarize")
 
     if "翻译" in question and "分析" in question:
-        content = extract_content(question, "翻译")
+        content = extract_content(question, "翻译")   #extract_content 只接受单个关键词，所以用 "翻译" 作为代表。
         return multi_agent_task(content, "translate_analyze")
 
     if "翻译" in question:

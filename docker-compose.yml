@@ -1,35 +1,50 @@
-version: '3.8'
+# Docker Compose 配置文件，定义了 MySQL、Redis 和后端三个服务，用一条命令就能启动整个项目。
+version: '3.8'  #版本声明
 
 services:
   mysql:
     image: mysql:8.0
-    container_name: knowledge_mysql
+    container_name: knowledge_mysql   #容器名
     environment:
-      MYSQL_ROOT_PASSWORD: 123456
-      MYSQL_DATABASE: knowledge_base
-      MYSQL_CHARSET: utf8mb4
+      MYSQL_ROOT_PASSWORD: 123456   #root密码
+      MYSQL_DATABASE: knowledge_base  #自动创建的数据库
+      MYSQL_CHARSET: utf8mb4   #字符集
+      TZ: Asia/Shanghai  #时区
     ports:
-      - "3307:3306"
+      - "3307:3306"   ## 宿主机 3307 → 容器 3306，宿主机用 3307 端口访问 MySQL
     volumes:
-      - mysql_data:/var/lib/mysql
+      - mysql_data:/var/lib/mysql  #数据持久化
     command: --default-authentication-plugin=mysql_native_password
+    restart: always  #容器退出自动重启
+
+  redis:
+    image: redis:7-alpine
+    container_name: knowledge_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
     restart: always
 
   backend:
-    build: .
+    build: .   #基于当前目录的 Dockerfile 构建
     container_name: knowledge_backend
     depends_on:
-      - mysql
+      - mysql   #依赖MySQL，先启动
+      - redis   #依赖Redis，先启动
     environment:
+      TZ: Asia/Shanghai
       DATABASE_URL: mysql+pymysql://root:123456@mysql:3306/knowledge_base?charset=utf8mb4
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       DASHSCOPE_API_KEY: ${DASHSCOPE_API_KEY}
+      REDIS_URL: redis://redis:6379/0
     ports:
       - "8001:8000"
     volumes:
-      - ./uploads:/app/uploads
-      - ./chroma_db:/app/chroma_db
+      - ./uploads:/app/uploads   #上传文件持久化
+      - ./chroma_db:/app/chroma_db  #向量数据库持久化
     restart: always
 
 volumes:
-  mysql_data:
+  mysql_data:   #定义命名的数据卷，MySQL 数据存在这里，删除容器不会丢失
+  redis_data:   #Redis 数据卷
