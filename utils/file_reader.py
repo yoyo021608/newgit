@@ -1,6 +1,6 @@
 #读取不同格式的文件内容。
 import os
-import PyPDF2  #解析 PDF 文件，提取文字
+import pdfplumber  # 对 PDF 中文支持更好
 from docx import Document as DocxDocument
 
 
@@ -12,10 +12,12 @@ def read_file(file_path: str) -> str:
             return f.read()
 
     elif ext == "pdf":
-        reader = PyPDF2.PdfReader(file_path)  #创建pdf读取器
         text = ""
-        for page in reader.pages:
-            text += page.extract_text() or ""  #提取当前页文字
+        with pdfplumber.open(file_path) as pdf:
+            for page in pdf.pages:
+                page_text = page.extract_text()
+                if page_text:
+                    text += page_text
         return text
 
     elif ext == "docx":

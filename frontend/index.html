@@ -513,7 +513,7 @@
                 <div id="tab-docs" class="tab-content active">
                     <div id="docs-msg" class="msg-box hidden"></div>
                     <div class="file-upload-row">
-                        <input type="file" id="file-input" accept=".txt,.md,.pdf,.docx">
+                        <input type="file" id="file-input" accept=".txt,.md,.pdf,.docx" multiple>
                         <button class="upload-btn" id="upload-btn">上传</button>
                     </div>
                     <hr>
@@ -1113,28 +1113,32 @@
     }
 
     $('upload-btn').addEventListener('click', async function() {
-        const input = $('file-input');
-        if (!input.files[0]) return showDocMsg('请选择文件', 'error');
-        const form = new FormData();
-        form.append('file', input.files[0]);
-        try {
-            const res = await fetch(API_BASE + '/documents/upload', {
-                method: 'POST',
-                headers: { 'token': token },
-                body: form
-            });
-            const data = await res.json();
-            if (data.id) {
-                showDocMsg('上传成功', 'success');
-                loadDocs();
-                input.value = '';
-            } else {
-                showDocMsg(data.detail || '上传失败', 'error');
-            }
-        } catch (e) {
-            showDocMsg('上传失败', 'error');
+    const input = $('file-input');
+    if (!input.files[0]) return showDocMsg('请选择文件', 'error');
+
+    const form = new FormData();
+    for (let i = 0; i < input.files.length; i++) {
+        form.append('files', input.files[i]);
+    }
+
+    try {
+        const res = await fetch(API_BASE + '/documents/upload-batch', {
+            method: 'POST',
+            headers: { 'token': token },
+            body: form
+        });
+        const data = await res.json();
+        if (data.results && data.results.length > 0) {
+            showDocMsg(`成功上传 ${data.results.length} 个文件`, 'success');
+            loadDocs();
+            input.value = '';
+        } else {
+            showDocMsg(data.message || '上传失败', 'error');
         }
-    });
+    } catch (e) {
+        showDocMsg('上传失败', 'error');
+    }
+});
 
     function showDocMsg(text, type) {
         const el = $('docs-msg');

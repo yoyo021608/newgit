@@ -6,7 +6,12 @@ from utils.mcp_client import call_mcp_tool
 
 #关键词预判断
 def should_use_tools(user_question: str) -> bool:
-    keywords = ["天气", "计算", "几点了", "现在", "多少", "加", "减", "乘", "除", "温度", "℃", "°C"]
+    keywords = [
+        "天气", "温度", "℃", "°C",
+        "计算", "等于", "多少", "加", "减", "乘", "除",
+        "*", "+", "-", "/",
+        "几点了", "现在", "时间", "几点"
+    ]
     return any(k in user_question for k in keywords)
 #如果用户问题中包含任意一个关键词，返回 True
 
