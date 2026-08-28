@@ -112,3 +112,61 @@ def delete_document_route(
     #删除 MySQL 记录
     delete_document(db, doc_id, user_id)
     return {"message": "文档已删除"}
+
+
+@router.post("/upload-batch")
+def upload_documents_batch(
+        files: list[UploadFile] = File(...),   #文件列表
+        token: str = Header(...),
+        db: Session = Depends(get_db)
+):
+    user_id = get_current_user(token)
+    results = []
+    errors = []
+
+    for file in files:   #循环
+        # 校验文件类型
+        ext = file.filename.split(".")[-1].lower()
+        if ext not in ["pdf", "docx", "txt", "md"]:
+            errors.append(f"{file.filename}: 不支持的文件类型")
+            continue
+
+        # 复用原有上传逻辑
+        try:
+            # 保存文件
+            file_path = os.path.join(UPLOAD_DIR, f"{user_id}_{file.filename}")
+            with open(file_path, "wb") as f:
+                shutil.copyfileobj(file.file, f)
+
+            # 读取内容
+            file_content = read_file(file_path)
+
+            # 创建文档记录
+            doc_data = DocumentCreate(
+                filename=file.filename,
+                file_path=file_path,
+                file_type=ext,
+                user_id=user_id
+            )
+            new_doc = create_document(db, doc_data)
+
+            # 存入向量库
+            add_document_to_vector_store(
+                doc_id=new_doc.id,
+                content=file_content,
+                metadata={"filename": file.filename, "user_id": user_id}
+            )
+
+            results.append({
+                "filename": file.filename,
+                "id": new_doc.id,
+                "status": "success"
+            })
+        except Exception as e:
+            errors.append(f"{file.filename}: {str(e)}")
+
+    return {
+        "message": f"成功上传 {len(results)} 个文件" + (f"，{len(errors)} 个失败" if errors else ""),
+        "results": results,
+        "errors": errors
+    }

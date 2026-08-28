@@ -6,6 +6,7 @@ from rank_bm25 import BM25Okapi
 from sqlalchemy.orm import Session
 from models.documents import Document
 from utils.vector_store import search_similar, update_document_in_vector_store
+from utils.file_reader import read_file  # 新增：统一文件读取
 
 
 def tokenize(text: str):
@@ -48,6 +49,7 @@ def hybrid_search(query: str, user_id: int, db: Session, top_k: int = 5):
         try:
             file_path = doc.file_path
             if not os.path.exists(file_path):
+                print(f"⚠️ 文件不存在: {file_path}")
                 continue
 
             # 检查文件是否被修改
@@ -56,10 +58,11 @@ def hybrid_search(query: str, user_id: int, db: Session, top_k: int = 5):
             # 打印调试信息
             print(f"🔍 检查文件: {doc.filename}, updated_at={doc.updated_at}, file_mtime={file_mtime}")
 
+            # 统一使用 read_file 读取文件内容
+            content = read_file(file_path)
+
             # 如果数据库没有记录更新时间，或者文件比记录新，则更新向量库
             if not doc.updated_at or file_mtime > doc.updated_at.replace(tzinfo=None):
-                with open(file_path, 'r', encoding='utf-8') as f:
-                    content = f.read()
                 # 更新向量库
                 update_document_in_vector_store(
                     doc.id,
@@ -70,21 +73,14 @@ def hybrid_search(query: str, user_id: int, db: Session, top_k: int = 5):
                 doc.updated_at = file_mtime
                 db.commit()
                 print(f"🔄 文档 {doc.filename} 已自动更新向量库")
-                doc_texts.append(content)
-                doc_metas.append({
-                    'id': doc.id,
-                    'filename': doc.filename,
-                    'file_path': doc.file_path
-                })
-            else:
-                with open(file_path, 'r', encoding='utf-8') as f:
-                    content = f.read()
-                doc_texts.append(content)
-                doc_metas.append({
-                    'id': doc.id,
-                    'filename': doc.filename,
-                    'file_path': doc.file_path
-                })
+
+            doc_texts.append(content)
+            doc_metas.append({
+                'id': doc.id,
+                'filename': doc.filename,
+                'file_path': doc.file_path
+            })
+
         except Exception as e:
             print(f"⚠️ 读取文档 {doc.filename} 失败: {e}")
             continue

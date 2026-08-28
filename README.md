@@ -12,7 +12,7 @@
 
 - 用户注册/登录/忘记密码（JWT 认证）
 - 注销账户（永久删除用户所有数据，含文档、聊天记录、会话）
-- 文档上传/列表/删除（支持 PDF、Word、TXT、Markdown）
+- 文档上传(支持单文件/多文件批量上传)/列表/删除（支持 PDF、Word、TXT、Markdown）
 - 智能问答（RAG 检索 + 大模型流式回答）
 - RAG Multi-Agent 协作问答（检索→评估→改写→写作，四 Agent 协作）
 - 快速问答（工具调用：计算/天气/时间/翻译/总结/代码解释）
@@ -73,7 +73,8 @@ POST   /api/users/forgot-password  忘记密码重置
 DELETE /api/users/me               注销账户（需 token）
 
 文档管理
-POST   /api/documents/upload       上传文档（需 token）
+POST   /api/documents/upload       上传文档（单文件，需 token）
+POST   /api/documents/upload-batch 批量上传文档（多文件，需 token）
 GET    /api/documents/             文档列表（需 token）
 DELETE /api/documents/{id}         删除文档（需 token）
 

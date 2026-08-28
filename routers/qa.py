@@ -16,6 +16,7 @@ import jieba
 import jieba.posseg #词性标注
 import os
 from datetime import datetime
+from utils.file_reader import read_file
 
 router = APIRouter(prefix="/api/qa", tags=["智能问答"])
 
@@ -110,8 +111,7 @@ def multi_keyword_search(question: str, user_id: int, db: Session):
                     print(f"🔍 检查文件: {doc.filename}, file_mtime={file_mtime}, updated_at={doc.updated_at}")
                     if not doc.updated_at or file_mtime > doc.updated_at.replace(tzinfo=None):
                         print(f"🔄 文件 {doc.filename} 已修改，更新向量库...")
-                        with open(file_path, 'r', encoding='utf-8') as f:
-                            content = f.read()
+                        content = read_file(file_path)
                         update_document_in_vector_store(
                             doc.id,
                             content,
@@ -121,8 +121,7 @@ def multi_keyword_search(question: str, user_id: int, db: Session):
                         db.commit()
                         print(f"✅ 文档 {doc.filename} 向量库已更新")
                     else:
-                        with open(file_path, 'r', encoding='utf-8') as f:
-                            content = f.read()
+                        content = read_file(file_path)
                 else:
                     print(f"⚠️ 文件不存在: {file_path}")
             except Exception as e:
@@ -228,8 +227,7 @@ def generate_stream(question: str, user_id: int, db: Session, session_id: int = 
 
     print(f"📄 文档顺序（按权重排序）:")
     for i, r in enumerate(results):
-        print(f"  文档{i+1}: {r['filename']} (权重: {r['weight']})")
-
+        print(f"  文档{i + 1}: {r['filename']} (权重: {r.get('weight', 'N/A')})")
     prompt = f"""请根据以下文档内容回答用户的问题。**文档1是与用户问题最相关的文档，请优先使用文档1的内容回答。**
 
 文档内容：
